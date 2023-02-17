@@ -7,10 +7,11 @@ For Version the following macro is available (Only works if the project director
 $(GitVersion) - Gets the version from Git in the recommended format Major.Minor.Build-PreRelease+CommitHash.BranchName.
 -->
 <Package Name="OpenTap.Plugins.FlexDCADemo" Version="0.1.0-alpha" OS="Windows,Linux" Architecture="AnyCPU" xmlns="http://opentap.io/schemas/package">
-  <Description>This is my OpenTAP plugin package.</Description>
+  <Description>Darwin 2023 Plugin</Description>
   <Files>
     <File Path="Packages/OpenTap.Plugins.FlexDCADemo/OpenTap.Plugins.FlexDCADemo.dll" SourcePath="OpenTap.Plugins.FlexDCADemo.dll">
-      <SetAssemblyInfo Attributes="Version"/>
+		<InjectLicense FeatureNames="DARWIN"/>
+		<SetAssemblyInfo Attributes="Version"/>
       <!--ObfuscateWithDotfuscator/-->
     </File>
   </Files>

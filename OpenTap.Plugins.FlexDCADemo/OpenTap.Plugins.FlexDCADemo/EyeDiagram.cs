@@ -10,27 +10,9 @@ namespace OpenTap.Plugins.FlexDCADemo
     public class EyeDiagramStep : TestStep
     {
         #region Settings
-        public enum WaveformModulation
-        {
-            [Scpi("UNSP")]
-            Unspecified,
-            [Scpi("NRZ")]
-            NonReturnToZero,
-            [Scpi("PAM4")]
-            FourLevelPAM
-        }
 
-        public enum ExtendedModuleType
-        {
-            [Scpi("DEM")]
-            DualElectrical,
-            [Scpi("DOM")]
-            DualOptical,
-            [Scpi("OEM")]
-            ElectricalOptical,
-            [Scpi("QEM")]
-            QuadElectricalOptical
-        }
+        [Display("2023 FlexDCA", Group: "Resources", Order: 0)]
+        public FlexDCAInstrument MyFlexDCA { get; set; }
 
         [Display("Extended Module", Group: "Module", Order: 1)]
         public ExtendedModuleType ModuleSelected { get; set; }
@@ -69,37 +51,32 @@ namespace OpenTap.Plugins.FlexDCADemo
 
         public override void Run()
         {
-            configure(WaveformModulationSelected, WaveformCount, ModuleSelected, WaveformAmplitude);
-            var result = measureEyeDiagram();
+            var settings = new FlexDCAInstrument.Settings(WaveformCount, WaveformModulationSelected, WaveformAmplitude,
+                ModuleSelected, OperatingMode.eye, WaveformType.data);
+            
+            MyFlexDCA.Configure(settings);
 
-            Results.Publish("Eye diagram", new { EyeDiagramResult = result });
+            // Get the result
+            var result = MyFlexDCA.MeasureEyeDiagram(settings);
 
-            if (result < 9.91E+37)
-                UpgradeVerdict(Verdict.Pass);
-            else
-                UpgradeVerdict(Verdict.Fail);
+            Results.Publish("Data Publish", new { height = result[0], width = result[1] });
 
-            RunChildSteps();
+            foreach (var item in result)
+            {
+                if(!(item < 9.91E+37))
+                {
+                    this.UpgradeVerdict(Verdict.Error);
+                }
+            }
+
+            this.UpgradeVerdict(Verdict.Pass);
+            
         }
 
         public override void PostPlanRun()
         {
             base.PostPlanRun();
             Log.Debug($"This is PostPlanRun of {nameof(EyeDiagramStep)}");
-        }
-
-
-        private void configure(WaveformModulation mod, double waveformCount, ExtendedModuleType moduleType, double waveformAmplitude)
-        {
-            Log.Debug("Setup waveform type to" + mod.ToString());
-            Log.Debug("Setup waveform count to" + waveformCount);
-            Log.Debug("Setup module type to" + moduleType.ToString());
-            Log.Debug("Setup waveform amplitude to" + waveformAmplitude);
-        }
-
-        private double measureEyeDiagram()
-        {
-            return 6.47E+2;
         }
     }
 }

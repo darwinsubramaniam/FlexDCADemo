@@ -19,6 +19,10 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
+	
+	<ItemGroup Condition="$(Configuration) == 'Release'">
+		<AdditionalOpenTapPackage Include="License Injector" Version="9.8.1" Repository="packages.opentap.keysight.com" />
+	</ItemGroup>
 
   <ItemGroup>
     <!-- Developer's System is needed to debug in 'Editor' -->
