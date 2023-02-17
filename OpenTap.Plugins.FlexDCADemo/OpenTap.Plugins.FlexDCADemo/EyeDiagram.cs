@@ -6,26 +6,100 @@ using OpenTap;   // Use OpenTAP infrastructure/core components (log,TestStep def
 
 namespace OpenTap.Plugins.FlexDCADemo
 {
-    [Display("Step", Group: "OpenTap.Plugins.FlexDCADemo", Description: "Insert description here")]
+    [Display("Eye Diagram", Group: "FlexDCADemo", Description: "This step measure and analyze eye diagram")]
     public class EyeDiagramStep : TestStep
     {
         #region Settings
-        // ToDo: Add property here for each parameter the end user should be able to change.
+        public enum WaveformModulation
+        {
+            [Scpi("UNSP")]
+            Unspecified,
+            [Scpi("NRZ")]
+            NonReturnToZero,
+            [Scpi("PAM4")]
+            FourLevelPAM
+        }
+
+        public enum ExtendedModuleType
+        {
+            [Scpi("DEM")]
+            DualElectrical,
+            [Scpi("DOM")]
+            DualOptical,
+            [Scpi("OEM")]
+            ElectricalOptical,
+            [Scpi("QEM")]
+            QuadElectricalOptical
+        }
+
+        [Display("Extended Module", Group: "Module", Order: 1)]
+        public ExtendedModuleType ModuleSelected { get; set; }
+
+
+        [Display("Number of Waveform", Group: "Waveform", Order: 2)]
+        public double WaveformCount { get; set; }
+
+
+        [Display("Waveform Type", Group: "Waveform", Order: 3)]
+        public WaveformModulation WaveformModulationSelected { get; set; }
+
+        [Display("Waveform Amplitude", Group: "Waveform", Order: 4)]
+        [Unit("V", true)]
+        public double WaveformAmplitude { get; set; }
+
         #endregion
 
         public EyeDiagramStep()
         {
-            // ToDo: Set default values for properties / settings.
+
+            WaveformCount = 100;
+            WaveformModulationSelected = WaveformModulation.NonReturnToZero;
+            ModuleSelected = ExtendedModuleType.DualElectrical;
+            WaveformAmplitude = 0.5;
+
+            Rules.Add(() => WaveformCount > 0, "Waveform count size must be greater than zero", nameof(WaveformCount));
+            Rules.Add(() => WaveformAmplitude > 0, "Waveform amplitude must be greater than zero", nameof(WaveformAmplitude));
+        }
+
+        public override void PrePlanRun()
+        {
+            base.PostPlanRun();
+            Log.Debug($"This is PostPlanRun of {nameof(EyeDiagramStep)}");
         }
 
         public override void Run()
         {
-            // ToDo: Add test case code.
-            RunChildSteps(); //If the step supports child steps.
+            configure(WaveformModulationSelected, WaveformCount, ModuleSelected, WaveformAmplitude);
+            var result = measureEyeDiagram();
 
-            // If no verdict is used, the verdict will default to NotSet.
-            // You can change the verdict using UpgradeVerdict() as shown below.
-            // UpgradeVerdict(Verdict.Pass);
+            Results.Publish("Eye diagram", new { EyeDiagramResult = result });
+
+            if (result < 9.91E+37)
+                UpgradeVerdict(Verdict.Pass);
+            else
+                UpgradeVerdict(Verdict.Fail);
+
+            RunChildSteps();
+        }
+
+        public override void PostPlanRun()
+        {
+            base.PostPlanRun();
+            Log.Debug($"This is PostPlanRun of {nameof(EyeDiagramStep)}");
+        }
+
+
+        private void configure(WaveformModulation mod, double waveformCount, ExtendedModuleType moduleType, double waveformAmplitude)
+        {
+            Log.Debug("Setup waveform type to" + mod.ToString());
+            Log.Debug("Setup waveform count to" + waveformCount);
+            Log.Debug("Setup module type to" + moduleType.ToString());
+            Log.Debug("Setup waveform amplitude to" + waveformAmplitude);
+        }
+
+        private double measureEyeDiagram()
+        {
+            return 6.47E+2;
         }
     }
 }
