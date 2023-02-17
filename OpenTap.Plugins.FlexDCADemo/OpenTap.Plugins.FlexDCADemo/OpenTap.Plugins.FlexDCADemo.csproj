@@ -16,10 +16,6 @@
     <TargetFramework>net472</TargetFramework>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>C:\Program Files\Keysight\Test Automation\Packages\FlexDCA\</OutputPath>
-  </PropertyGroup>
-
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
@@ -32,7 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTAP" Version="9.15.1" />
+    <PackageReference Include="OpenTAP" Version="9.19.5" />
   </ItemGroup>
 
 </Project>

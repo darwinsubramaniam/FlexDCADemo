@@ -7,13 +7,13 @@ using OpenTap;   // Use OpenTAP infrastructure/core components (log,TestStep def
 namespace OpenTap.Plugins.FlexDCADemo
 {
     [Display("Step", Group: "OpenTap.Plugins.FlexDCADemo", Description: "Insert description here")]
-    public class Step : TestStep
+    public class EyeDiagramStep : TestStep
     {
         #region Settings
         // ToDo: Add property here for each parameter the end user should be able to change.
         #endregion
 
-        public Step()
+        public EyeDiagramStep()
         {
             // ToDo: Set default values for properties / settings.
         }
